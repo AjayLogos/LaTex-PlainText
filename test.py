@@ -68,7 +68,7 @@ def convert_latex_to_html2(latex_input):
 def main():
     # Sidebar inputs
     st.sidebar.title("Input")
-    st.sidebar.write("Enter the question ID and select the method:")
+    st.sidebar.write("Enter the question ID :")
     
     # Input: Question ID
     id_input = st.sidebar.text_input(
