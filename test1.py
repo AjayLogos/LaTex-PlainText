@@ -5,7 +5,7 @@ import streamlit as st
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 import google.generativeai as genai
-# from IPython.display import display, Image
+from IPython.display import display, Image
 # Configure the API key globally (set this once in your code)
 genai.configure(api_key="AIzaSyCpFA-5JSPdKkykJAXGGdOSQ9AVVIpk-a4") 
 
@@ -37,14 +37,14 @@ def convert_latex_to_text(latex_text):
 
 def retrieve_question(question_id,data_src):
     # print("Data Source used :", data_src)
-    data =pd.read_excel(data_src)
+    data =pd.read_csv(data_src)
     df=pd.DataFrame(data)
 
-    question_row = df[df['Doubt_id'] == question_id]
-    question = question_row.iloc[0]['Question']
-    soltuion = question_row.iloc[0]['Solution']
+    question_row = df[df['doubt_id'] == question_id]
+    question = question_row.iloc[0]['question']
+    soltuion = question_row.iloc[0]['solution']
 
-    if data_src == "rag_engine_2.0_flash_unseen_data_results_evaluated_processed.xlsx":
+    if data_src == "rag_engine_2.0_flash_optimized_prompt_150_evaluated.csv":
         llm_response = question_row.iloc[0]['RAG_Engine_with_Gemini_2.0_flash_response']
     else:
         llm_response = question_row.iloc[0]['RAG_Engine_with_Gemini_thinking_response']
@@ -65,7 +65,7 @@ def get_image_from_html(html_text):
             return response.content  # Returns the image binary content
         else:
             # st.error("Failed to download image.")
-            return None
+            return "Failed to load image"
     else:
         html_text = BeautifulSoup(html_text, "html.parser").get_text()
         st.header("Solution",divider='blue')
@@ -93,15 +93,17 @@ def get_image_from_html(html_text):
 #         return f"Error processing LaTeX: {str(e)}"
 
 
-
+# ---------------------------------------------------------------------------------------------------------------------------
 def main():
     # Sidebar inputs
     st.sidebar.title("Input")
     # st.sidebar.write("Select the Data and Enter the question ID")
     
-    option = st.sidebar.selectbox('which data to use?',
-    ('rag_engine_2.0_flash_unseen_data_results_evaluated_processed.xlsx', 'rag_engine_thinking_mode_merged_prompt_new_data_eval_1_processed.xlsx'))
-
+    option = st.sidebar.selectbox(
+        'Which data to use?',
+        ('rag_engine_2.0_flash_optimized_prompt_150_evaluated.csv', 
+         'rag_engine_thinking_mode_optimized_prompt_evaluated.csv')
+    )
     # st.sidebar.write('You selected:', option)
     # Input: Question ID
     id_input = st.sidebar.text_input(
@@ -144,6 +146,59 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# ------------------------------------------------------------------------------------------------------
+
+# def main():
+#     # Sidebar inputs
+#     st.set_page_config(layout="wide")
+#     st.sidebar.title("Input")
+
+#     option = st.sidebar.selectbox(
+#         'Which data to use?',
+#         ('rag_engine_2.0_flash_optimized_prompt_150_evaluated.csv', 
+#          'rag_engine_thinking_mode_optimized_prompt_evaluated.csv')
+#     )
+
+#     id_input = st.sidebar.text_input("Enter Doubt ID:", placeholder="6130")
+
+#     render_button = st.sidebar.button("Render")
+
+#     # Main area
+#     st.title("Render LaTeX in Plain Text")
+
+#     if render_button:
+#         if id_input.strip():
+#             # Fetch the LaTeX expression based on the ID
+#             question, solution, latex_expression = retrieve_question(float(id_input), str(option))
+
+#             # Layout with two columns
+#             col1, col2 = st.columns(spec=[0.4,0.6],gap='medium',border=True)
+
+#             with col1:
+#                 st.header("Question ", divider='blue')
+#                 question_text = convert_latex_to_text(question)
+#                 st.text(question_text)
+                
+#                 st.header("Solution", divider='blue')
+#                 image_content = get_image_from_html(solution)
+#                 if image_content:
+#                     st.image(image_content, caption="Extracted Image", use_container_width=True)
+
+#             with col2:
+#                 st.header("LLM Response", divider='blue')
+#                 if latex_expression:
+#                     plain_text = convert_latex_to_text(latex_expression)
+#                     st.text(plain_text)
+#                 else:
+#                     st.error("No LaTeX found for the given ID!")
+
+#         else:
+#             st.error("Please provide a valid Question ID!")
+
+# if __name__ == "__main__":
+#     main()
+
 
 
 #%%
