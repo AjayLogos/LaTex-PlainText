@@ -5,7 +5,7 @@ import streamlit as st
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 import google.generativeai as genai
-from IPython.display import display, Image
+# from IPython.display import display, Image
 # Configure the API key globally (set this once in your code)
 genai.configure(api_key="AIzaSyCpFA-5JSPdKkykJAXGGdOSQ9AVVIpk-a4") 
 
